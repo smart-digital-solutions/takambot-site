@@ -47,7 +47,9 @@ async function loadNotebooks() {
             // Magnetic hover effect
             attachMagnetic(pill);
             // GA Event Tracking
-            pill.addEventListener('click', () => {
+            // GA Event Tracking & Delayed Navigation
+            pill.addEventListener('click', (e) => {
+                e.preventDefault();
                 if (typeof gtag === 'function') {
                     // 1. Generic event with parameters (for standard reports)
                     gtag('event', 'notebook_click', { 'notebook_id': nb.id || `notebook-${i}`, 'notebook_title': nb.title || nb.label });
@@ -55,6 +57,10 @@ async function loadNotebooks() {
                     const cleanId = (nb.id || `notebook-${i}`).replace(/-/g, '_');
                     gtag('event', `click_${cleanId}`);
                 }
+                // Delay transition to show sparkle effects
+                setTimeout(() => {
+                    window.open(nb.url, '_blank');
+                }, 350);
             });
 
             grid.appendChild(pill);
