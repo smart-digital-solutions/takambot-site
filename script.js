@@ -125,28 +125,6 @@ function initParticles() {
 }
 
 /* ─────────────────────────────────────────────────────────
-   4. 3D TILT ON VIDEO CONTAINER
-   ───────────────────────────────────────────────────────── */
-function initVideoTilt() {
-    const wrapper   = document.getElementById('video-tilt-wrapper');
-    const container = document.getElementById('video-container');
-    if (!wrapper || !container) return;
-
-    wrapper.addEventListener('mousemove', (e) => {
-        const rect = wrapper.getBoundingClientRect();
-        const cx   = rect.left + rect.width  / 2;
-        const cy   = rect.top  + rect.height / 2;
-        const rx   = ((e.clientY - cy) / (rect.height / 2)) * -6;
-        const ry   = ((e.clientX - cx) / (rect.width  / 2)) *  6;
-        container.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) scale3d(1.02,1.02,1.02)`;
-    });
-
-    wrapper.addEventListener('mouseleave', () => {
-        container.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1,1,1)';
-    });
-}
-
-/* ─────────────────────────────────────────────────────────
    5. CURSOR SPOTLIGHT
    ───────────────────────────────────────────────────────── */
 function initCursorSpotlight() {
