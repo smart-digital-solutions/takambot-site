@@ -361,7 +361,6 @@ function initSmoothScroll() {
 document.addEventListener('DOMContentLoaded', () => {
     loadNotebooks();
     initParticles();
-    initVideoTilt();
     initCursorSpotlight();
     initNavbar();
     initScrollReveal();
