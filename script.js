@@ -49,7 +49,11 @@ async function loadNotebooks() {
             // GA Event Tracking
             pill.addEventListener('click', () => {
                 if (typeof gtag === 'function') {
+                    // 1. Generic event with parameters (for standard reports)
                     gtag('event', 'notebook_click', { 'notebook_id': nb.id || `notebook-${i}`, 'notebook_title': nb.title || nb.label });
+                    // 2. Specific event name (for instant real-time list visibility)
+                    const cleanId = (nb.id || `notebook-${i}`).replace(/-/g, '_');
+                    gtag('event', `click_${cleanId}`);
                 }
             });
 
@@ -303,15 +307,13 @@ function initVideo() {
     const attemptPlay = () => video.play().catch(() => {});
     attemptPlay();
 
-    // Try with sound on first user gesture
+    // Only unmute when the user clicks explicitly on the video itself
     const unlockAudio = () => {
         video.muted = false;
         video.play().catch(() => { video.muted = true; });
-        document.removeEventListener('click', unlockAudio);
-        document.removeEventListener('keydown', unlockAudio);
+        video.removeEventListener('click', unlockAudio);
     };
-    document.addEventListener('click',   unlockAudio, { once: true });
-    document.addEventListener('keydown', unlockAudio, { once: true });
+    video.addEventListener('click', unlockAudio);
 }
 
 
