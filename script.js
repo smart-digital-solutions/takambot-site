@@ -255,25 +255,3 @@ document.querySelectorAll('a[href^="#"]').forEach(a =>
 );
 
 
-// ─────────────────────────────────────────
-// 9. Programmatic video autoplay
-// ─────────────────────────────────────────
-(function initVideoAutoplay() {
-    window.addEventListener('DOMContentLoaded', () => {
-        const video = document.getElementById('guide-video');
-        if (video) {
-            video.muted = true;
-            video.play().catch(() => {
-                // If blocked by browser, try playing on first user interaction
-                const playOnInteraction = () => {
-                    video.play().catch(() => {});
-                    document.removeEventListener('click', playOnInteraction);
-                    document.removeEventListener('touchstart', playOnInteraction);
-                };
-                document.addEventListener('click', playOnInteraction);
-                document.addEventListener('touchstart', playOnInteraction);
-            });
-        }
-    });
-})();
-
