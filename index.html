@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תכמבוט — בוט חכם להוראות התכ"ם | משרד התקשורת</title>
+    <meta name="description" content="מאגר חכם המאפשר שאילתת שאלות בשפה חופשית על הוראות התכ״ם. שירות חינמי של משרד התקשורת לעוסקים ברכש ומנהל ציבורי.">
+    <meta name="keywords" content="תכם, תכמבוט, רכש, מנהל ציבורי, הוראות תכם, משרד התקשורת">
+    <meta property="og:title" content="תכמבוט — בוט חכם להוראות התכ״ם">
+    <meta property="og:description" content="שאל שאלות בשפה חופשית וקבל תשובות מדויקות מתוך הוראות התכ״ם">
+    <meta property="og:type" content="website">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CDN v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heebo: ['Heebo', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        cyber: {
+                            50:  '#e0fcff', 100: '#b8f3ff', 200: '#81ecff',
+                            300: '#41e2ff', 400: '#00d4ff', 500: '#00b8e6',
+                            600: '#0090b4', 700: '#006d89', 800: '#004d63', 900: '#002d3d',
+                        },
+                        neon: { blue: '#00d4ff', purple: '#a855f7', pink: '#ec4899', green: '#10b981' },
+                        dark: { 950: '#020617', 900: '#030712', 800: '#0a0f1e', 700: '#111827', 600: '#1a2237', 500: '#243049' },
+                    },
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-dark-950 text-white font-heebo overflow-x-hidden antialiased">
+
+    <!-- Ambient Gradient Mesh Background -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div class="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-cyber-400/[0.04] blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-neon-purple/[0.04] blur-[120px]"></div>
+        <div class="absolute top-[40%] left-[30%] w-[300px] h-[300px] rounded-full bg-neon-pink/[0.02] blur-[100px]"></div>
+    </div>
+
+    <!-- Subtle Grid -->
+    <div class="fixed inset-0 z-[1] pointer-events-none opacity-[0.03]"
+         style="background-image: linear-gradient(rgba(0,212,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.4) 1px, transparent 1px); background-size: 80px 80px;"></div>
+
+    <!-- Particle Canvas -->
+    <canvas id="particles-canvas" class="fixed inset-0 z-[2] pointer-events-none"></canvas>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="fixed top-0 w-full z-50 transition-all duration-500" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14 sm:h-16">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyber-400 to-neon-purple flex items-center justify-center text-sm font-bold shadow-lg shadow-cyber-400/20">🤖</div>
+                    <span class="text-base sm:text-lg font-bold bg-gradient-to-l from-cyber-400 to-cyber-200 bg-clip-text text-transparent">תכמבוט</span>
+                </div>
+                <div class="hidden sm:flex items-center gap-5 text-[13px] text-gray-500">
+                    <a href="#notebooks" class="hover:text-cyber-400 transition-colors duration-200">מחברות</a>
+                    <a href="#features" class="hover:text-cyber-400 transition-colors duration-200">יכולות</a>
+                    <a href="#examples" class="hover:text-cyber-400 transition-colors duration-200">דוגמאות</a>
+                    <a href="#contact" class="hover:text-cyber-400 transition-colors duration-200">קשר</a>
+                </div>
+                <button id="mobile-menu-btn" class="sm:hidden p-2 rounded-lg hover:bg-white/5 transition-colors" aria-label="תפריט ניווט">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="sm:hidden hidden bg-dark-900/95 backdrop-blur-xl border-b border-white/5">
+            <div class="px-4 py-3 space-y-2 text-sm">
+                <a href="#notebooks" class="block text-gray-400 hover:text-cyber-400 py-1.5">מחברות</a>
+                <a href="#features" class="block text-gray-400 hover:text-cyber-400 py-1.5">יכולות</a>
+                <a href="#examples" class="block text-gray-400 hover:text-cyber-400 py-1.5">דוגמאות</a>
+                <a href="#contact" class="block text-gray-400 hover:text-cyber-400 py-1.5">קשר</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== HERO + VIDEO ===== -->
+    <section class="relative z-10 min-h-[100dvh] flex items-center pt-16 pb-8 px-4">
+        <div class="max-w-7xl mx-auto w-full">
+            <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <!-- Right side (RTL) — Text -->
+                <div class="order-2 lg:order-1">
+                    <!-- Badge -->
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-cyber-400/20 bg-cyber-400/5 text-cyber-300 text-xs mb-5 animate-fade-in">
+                        <span class="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse"></span>
+                        משרד התקשורת · רכש, נכסים ולוגיסטיקה
+                    </div>
+
+                    <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black mb-3 leading-[1.1] animate-slide-up">
+                        <span class="hero-gradient-text">תכמבוט</span>
+                    </h1>
+                    <p class="text-xl sm:text-2xl text-gray-400 font-light mb-4 animate-slide-up" style="animation-delay:.15s;opacity:0">
+                        בוט חכם להוראות התכ"ם
+                    </p>
+                    <p class="text-[15px] text-gray-500 leading-relaxed mb-6 max-w-md animate-slide-up" style="animation-delay:.25s;opacity:0">
+                        מאגר AI שחוסך זמן יקר. במקום חיפוש ידני — שאלו בשפה חופשית וקבלו תשובות מדויקות עם הפניה למקור.
+                    </p>
+
+                    <!-- CTA -->
+                    <div class="flex flex-wrap gap-3 animate-slide-up" style="animation-delay:.35s;opacity:0">
+                        <a href="#notebooks" class="cta-primary group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-l from-cyber-500 to-cyber-400 text-dark-900 font-bold text-sm transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(0,212,255,0.35)]">
+                            🚀 התחל לשאול
+                            <svg class="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                        <a href="#features" class="inline-flex items-center px-6 py-3 rounded-xl border border-white/10 text-gray-400 text-sm hover:border-cyber-400/30 hover:text-cyber-300 transition-all duration-300">
+                            מה זה תכמבוט?
+                        </a>
+                    </div>
+
+                    <!-- Quick Stats Row -->
+                    <div class="flex gap-6 mt-8 animate-slide-up" style="animation-delay:.45s;opacity:0">
+                        <div>
+                            <span class="text-lg font-bold text-cyber-400" id="stat-docs">0</span>
+                            <span class="text-xs text-gray-600 block">הוראות</span>
+                        </div>
+                        <div class="w-px bg-white/5"></div>
+                        <div>
+                            <span class="text-lg font-bold text-neon-purple">AI</span>
+                            <span class="text-xs text-gray-600 block">בינה מלאכותית</span>
+                        </div>
+                        <div class="w-px bg-white/5"></div>
+                        <div>
+                            <span class="text-lg font-bold text-neon-green">24/7</span>
+                            <span class="text-xs text-gray-600 block">זמין תמיד</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Left side (RTL) — Video -->
+                <div class="order-1 lg:order-2 animate-fade-in" style="animation-delay:.3s;opacity:0">
+                    <div id="video-container" class="relative rounded-2xl overflow-hidden bg-dark-800/60 border border-white/[0.06] aspect-video shadow-2xl shadow-black/30 group">
+                        <!-- Glow ring -->
+                        <div class="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-cyber-400/20 via-transparent to-neon-purple/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+
+                        <!-- Video placeholder — replace with iframe when ready -->
+                        <div id="video-placeholder" class="relative z-10 flex flex-col items-center justify-center h-full text-center p-6">
+                            <div class="w-16 h-16 rounded-full bg-cyber-400/10 border border-cyber-400/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
+                                <svg class="w-7 h-7 text-cyber-400 mr-[-2px]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                            <p class="text-gray-400 text-sm">סרטון הדרכה · בקרוב</p>
+                        </div>
+
+                        <!--
+                            ═══════════════════════════════════════════
+                            TO ADD YOUR VIDEO:
+                            1. Upload to YouTube (or Google Drive)
+                            2. Delete the #video-placeholder div above
+                            3. Uncomment the iframe below
+                            4. Replace YOUR_YOUTUBE_ID with the video ID
+                            ═══════════════════════════════════════════
+
+                        <iframe class="absolute inset-0 w-full h-full z-10"
+                                src="https://www.youtube.com/embed/YOUR_YOUTUBE_ID?rel=0&modestbranding=1"
+                                title="הדרכת תכמבוט"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                        -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== NOTEBOOKS ===== -->
+    <section id="notebooks" class="relative z-10 py-14 sm:py-16 px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-3 mb-6">
+                <h2 class="text-xl sm:text-2xl font-bold">גישה למחברות</h2>
+                <div class="flex-1 h-px bg-gradient-to-l from-transparent to-white/5"></div>
+            </div>
+
+            <!-- Notebooks rendered dynamically from notebooks.json -->
+            <div id="notebooks-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+                <!-- Loading skeletons -->
+                <div class="skeleton-pill h-[66px] rounded-xl bg-dark-800/40 border border-white/[0.04] animate-pulse"></div>
+                <div class="skeleton-pill h-[66px] rounded-xl bg-dark-800/40 border border-white/[0.04] animate-pulse" style="animation-delay:.15s"></div>
+            </div>
+
+            <!-- Compact Error Notice -->
+            <div class="flex items-start gap-3 p-4 rounded-xl bg-amber-500/[0.04] border border-amber-500/10">
+                <span class="text-base mt-0.5 flex-shrink-0">⚠️</span>
+                <div class="text-[13px] text-gray-400 leading-relaxed">
+                    <span class="text-amber-300/90 font-medium">קיבלת "לא יכול לענות כרגע"?</span>
+                    זה עומס זמני — <strong class="text-white/80">נסו מחברת אחרת</strong>, שתיהן מכילות אותו מידע. לחלופין המתינו דקה ונסו שוב, או נסחו שאלה ממוקדת יותר.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FEATURES ===== -->
+    <section id="features" class="relative z-10 py-14 sm:py-16 px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-3 mb-8">
+                <h2 class="text-xl sm:text-2xl font-bold">מה <span class="text-cyber-400">תכמבוט</span> יכול?</h2>
+                <div class="flex-1 h-px bg-gradient-to-l from-transparent to-white/5"></div>
+            </div>
+
+            <div class="grid sm:grid-cols-3 gap-4">
+                <div class="feature-card group p-5 rounded-xl bg-dark-800/40 border border-white/[0.04] hover:border-cyber-400/20 transition-all duration-500">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-9 h-9 rounded-lg bg-cyber-400/10 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">🔍</div>
+                        <h3 class="text-[15px] font-bold">שאלות בשפה חופשית</h3>
+                    </div>
+                    <p class="text-[13px] text-gray-500 leading-relaxed">שאלו כמו שהייתם שואלים עמית וקבלו תשובה מדויקת מתוך ההוראות.</p>
+                </div>
+
+                <div class="feature-card group p-5 rounded-xl bg-dark-800/40 border border-white/[0.04] hover:border-neon-purple/20 transition-all duration-500">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-9 h-9 rounded-lg bg-neon-purple/10 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">📊</div>
+                        <h3 class="text-[15px] font-bold">סיכום והשוואה</h3>
+                    </div>
+                    <p class="text-[13px] text-gray-500 leading-relaxed">ניתוח מהיר של נהלים מורכבים והשוואה בין סעיפים תוך שניות.</p>
+                </div>
+
+                <div class="feature-card group p-5 rounded-xl bg-dark-800/40 border border-white/[0.04] hover:border-neon-green/20 transition-all duration-500">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-9 h-9 rounded-lg bg-neon-green/10 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">💡</div>
+                        <h3 class="text-[15px] font-bold">איתור מהיר</h3>
+                    </div>
+                    <p class="text-[13px] text-gray-500 leading-relaxed">הפניה ישירה למקור הרלוונטי — סעיף, פרק ומסמך מדויק.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== EXAMPLE QUESTIONS ===== -->
+    <section id="examples" class="relative z-10 py-14 sm:py-16 px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-3 mb-6">
+                <h2 class="text-xl sm:text-2xl font-bold">דוגמאות <span class="text-cyber-400">לשאלות</span></h2>
+                <div class="flex-1 h-px bg-gradient-to-l from-transparent to-white/5"></div>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-2.5">
+                <button class="example-q group text-right p-4 rounded-xl bg-dark-800/30 border border-white/[0.04] hover:border-cyber-400/15 transition-all duration-300 hover:bg-dark-700/40" onclick="copyQuestion(this)">
+                    <div class="flex items-center gap-3">
+                        <span class="text-cyber-400/60 group-hover:text-cyber-400 transition-colors text-sm">💬</span>
+                        <span class="text-[13px] text-gray-300 flex-1">מהו הסכום המרבי לרכישה בהליך מזורז?</span>
+                        <span class="text-[11px] text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">העתק</span>
+                    </div>
+                </button>
+                <button class="example-q group text-right p-4 rounded-xl bg-dark-800/30 border border-white/[0.04] hover:border-cyber-400/15 transition-all duration-300 hover:bg-dark-700/40" onclick="copyQuestion(this)">
+                    <div class="flex items-center gap-3">
+                        <span class="text-cyber-400/60 group-hover:text-cyber-400 transition-colors text-sm">💬</span>
+                        <span class="text-[13px] text-gray-300 flex-1">מתי נדרש מכרז פומבי ומתי מכרז סגור?</span>
+                        <span class="text-[11px] text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">העתק</span>
+                    </div>
+                </button>
+                <button class="example-q group text-right p-4 rounded-xl bg-dark-800/30 border border-white/[0.04] hover:border-cyber-400/15 transition-all duration-300 hover:bg-dark-700/40" onclick="copyQuestion(this)">
+                    <div class="flex items-center gap-3">
+                        <span class="text-cyber-400/60 group-hover:text-cyber-400 transition-colors text-sm">💬</span>
+                        <span class="text-[13px] text-gray-300 flex-1">מהם הכללים לניהול ועדת מכרזים?</span>
+                        <span class="text-[11px] text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">העתק</span>
+                    </div>
+                </button>
+                <button class="example-q group text-right p-4 rounded-xl bg-dark-800/30 border border-white/[0.04] hover:border-cyber-400/15 transition-all duration-300 hover:bg-dark-700/40" onclick="copyQuestion(this)">
+                    <div class="flex items-center gap-3">
+                        <span class="text-cyber-400/60 group-hover:text-cyber-400 transition-colors text-sm">💬</span>
+                        <span class="text-[13px] text-gray-300 flex-1">מהם התנאים להתקשרות עם ספק יחיד?</span>
+                        <span class="text-[11px] text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">העתק</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer id="contact" class="relative z-10 py-10 px-4 border-t border-white/[0.04]">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-[13px] text-gray-500">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-md bg-gradient-to-br from-cyber-400 to-neon-purple flex items-center justify-center text-[10px]">🤖</div>
+                <span>תכמבוט · משרד התקשורת</span>
+                <span class="text-gray-700">|</span>
+                <span>© 2025–2026</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-gray-600">דינה שרון</span>
+                <a href="mailto:sharond@moc.gov.il" class="text-gray-500 hover:text-cyber-400 transition-colors font-inter" dir="ltr">sharond@moc.gov.il</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-xl bg-cyber-400/90 text-dark-900 font-bold text-xs shadow-lg shadow-cyber-400/30 transition-all duration-300 translate-y-16 opacity-0 pointer-events-none">
+        ✅ השאלה הועתקה!
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

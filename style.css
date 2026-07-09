@@ -1,0 +1,130 @@
+/* ============================
+   TakamBot Landing — style.css
+   ============================ */
+
+html { scroll-behavior: smooth; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #020617; }
+::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.15); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,212,255,0.3); }
+::selection { background: rgba(0,212,255,0.2); color: #fff; }
+
+/* ─── Hero gradient text ─── */
+.hero-gradient-text {
+    background: linear-gradient(135deg, #41e2ff 0%, #00d4ff 40%, #a855f7 80%, #ec4899 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 6s ease infinite;
+}
+@keyframes gradientShift {
+    0%,100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+}
+
+/* ─── Entrance animations ─── */
+@keyframes fadeIn {
+    from { opacity:0; }
+    to   { opacity:1; }
+}
+@keyframes slideUp {
+    from { opacity:0; transform:translateY(24px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+.animate-fade-in  { animation: fadeIn  0.9s ease-out forwards; }
+.animate-slide-up { animation: slideUp 0.8s ease-out forwards; }
+
+/* ─── Navbar scroll glass ─── */
+#navbar.scrolled {
+    background: rgba(2,6,23,0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,212,255,0.06);
+}
+
+/* ─── Notebook pills ─── */
+.notebook-pill {
+    position: relative;
+    overflow: hidden;
+}
+.notebook-pill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,212,255,0.04) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+.notebook-pill:hover::before { opacity: 1; }
+
+/* ─── Feature cards scroll-in ─── */
+.feature-card {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s;
+}
+.feature-card.visible { opacity:1; transform:translateY(0); }
+
+/* ─── Example questions ─── */
+.example-q {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    width: 100%;
+}
+.example-q::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.02), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+}
+.example-q:hover::after { transform: translateX(100%); }
+
+/* ─── Video container glow ─── */
+#video-container {
+    transition: box-shadow 0.5s ease;
+}
+#video-container:hover {
+    box-shadow: 0 0 60px -10px rgba(0,212,255,0.12), 0 0 100px -20px rgba(168,85,247,0.08);
+}
+
+/* ─── CTA primary shimmer ─── */
+.cta-primary {
+    position: relative;
+    overflow: hidden;
+}
+.cta-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: right 0.5s ease;
+}
+.cta-primary:hover::after { right: 150%; }
+
+/* ─── Accessibility ─── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    html { scroll-behavior: auto; }
+    .feature-card { opacity:1; transform:none; }
+    .hero-gradient-text { animation: none; }
+}
+
+/* ─── Print ─── */
+@media print {
+    #particles-canvas, #navbar { display:none !important; }
+    body { background:#fff; color:#000; }
+    a { color:#000 !important; }
+}

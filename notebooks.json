@@ -1,0 +1,23 @@
+{
+  "notebooks": [
+    {
+      "id": "notebook-a",
+      "label": "א׳",
+      "title": "מחברת א׳",
+      "subtitle": "הוראות תכ\"ם · מלא",
+      "url": "https://notebooklm.google.com/notebook/f2ac25de-0945-4407-b364-4bb214c00c25/preview",
+      "color": "from-cyber-400 to-cyber-600",
+      "accentClass": "cyber"
+    },
+    {
+      "id": "notebook-b",
+      "label": "ב׳",
+      "title": "מחברת ב׳",
+      "subtitle": "הוראות תכ\"ם · מלא",
+      "url": "https://notebooklm.google.com/notebook/00fdd34a-5e29-4876-8d4a-9273116a23e0/preview",
+      "color": "from-purple-500 to-pink-500",
+      "accentClass": "purple"
+    }
+  ],
+  "_instructions": "כדי להוסיף מחברת: העתיקו בלוק קיים, שנו id/label/title/url. accentClass: 'cyber' (כחול) | 'purple' (סגול) | 'green' (ירוק) | 'pink' (ורוד)"
+}
