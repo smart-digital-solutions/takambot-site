@@ -38,7 +38,7 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body class="bg-dark-950 text-white font-heebo overflow-x-hidden antialiased">
 
@@ -156,24 +156,28 @@
                     </div>
                 </div>
 
-                <!-- Left side (RTL) — Video with aurora glow -->
+                <!-- Left side (RTL) — Video with 3D tilt -->
                 <div class="order-1 lg:order-2 animate-fade-in" style="animation-delay:.3s;opacity:0">
-                    <div id="video-container" class="relative rounded-2xl overflow-hidden bg-dark-800/60 border border-white/[0.06] aspect-video shadow-2xl shadow-black/50 group video-aurora-glow">
-                        <!-- Animated scan line -->
-                        <div class="scan-line pointer-events-none absolute inset-0 z-20"></div>
-                        <!-- Corner accents -->
-                        <div class="corner-tl"></div>
-                        <div class="corner-tr"></div>
-                        <div class="corner-bl"></div>
-                        <div class="corner-br"></div>
-                        <!-- Video player -->
-                        <video id="guide-video" class="absolute inset-0 w-full h-full object-cover z-10" loop playsinline controls>
-                            <source src="guide.mp4" type="video/mp4">
-                            דפדפן זה אינו תומך בהצגת וידאו.
-                        </video>
+                    <div id="video-tilt-wrapper" class="tilt-wrapper">
+                        <div id="video-container" class="relative rounded-2xl overflow-hidden bg-dark-800/60 border border-white/[0.06] aspect-video shadow-2xl shadow-black/50 group video-glow">
+                            <!-- Animated scan line -->
+                            <div class="scan-line pointer-events-none absolute inset-0 z-20"></div>
+                            <!-- Glow ring -->
+                            <div class="absolute -inset-[1px] rounded-2xl bg-gradient-to-br from-cyber-400/20 via-transparent to-neon-purple/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                            <!-- Corner accents -->
+                            <div class="corner-tl"></div>
+                            <div class="corner-tr"></div>
+                            <div class="corner-bl"></div>
+                            <div class="corner-br"></div>
+                            <!-- Video player -->
+                            <video id="guide-video" class="absolute inset-0 w-full h-full object-cover z-10" loop playsinline controls>
+                                <source src="guide.mp4" type="video/mp4">
+                                דפדפן זה אינו תומך בהצגת וידאו.
+                            </video>
+                        </div>
+                        <!-- Reflection -->
+                        <div class="video-reflection"></div>
                     </div>
-                    <!-- Reflection -->
-                    <div class="video-reflection"></div>
                 </div>
             </div>
         </div>
@@ -292,6 +296,6 @@
     <!-- Sparkle container -->
     <div id="sparkle-container" class="fixed inset-0 z-[60] pointer-events-none"></div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2"></script>
 </body>
 </html>
