@@ -46,13 +46,21 @@ async function loadNotebooks() {
 
             // Magnetic hover effect
             attachMagnetic(pill);
+            // GA Event Tracking
+            pill.addEventListener('click', () => {
+                if (typeof gtag === 'function') {
+                    gtag('event', 'notebook_click', { 'notebook_id': nb.id || `notebook-${i}`, 'notebook_title': nb.title || nb.label });
+                }
+            });
+
             grid.appendChild(pill);
         });
     } catch (err) {
         console.warn('notebooks.json load failed:', err);
         grid.innerHTML = `
-            <a href="https://notebooklm.google.com" target="_blank" rel="noopener"
-               class="notebook-pill accent-cyber col-span-2">
+            <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer"
+               class="notebook-pill accent-cyber col-span-2"
+               onclick="if(typeof gtag === 'function') gtag('event', 'notebook_click', { 'notebook_id': 'fallback', 'notebook_title': 'NotebookLM' });">
                 <div class="pill-label-dot">📖</div>
                 <div class="pill-text"><span class="pill-title">פתחו NotebookLM</span></div>
                 <span class="pill-arrow">←</span>
