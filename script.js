@@ -306,17 +306,7 @@ function initVideo() {
     document.addEventListener('keydown', unlockAudio, { once: true });
 }
 
-/* ─────────────────────────────────────────────────────────
-   13. FLOATING CREATOR BADGE — click to email
-   ───────────────────────────────────────────────────────── */
-function initCreatorBadge() {
-    const badge = document.getElementById('creator-badge');
-    if (!badge) return;
-    badge.addEventListener('click', () => {
-        window.location.href = 'mailto:sharond@moc.gov.il';
-    });
-    badge.style.cursor = 'pointer';
-}
+
 
 /* ─────────────────────────────────────────────────────────
    14. SMOOTH SCROLL for nav links
@@ -346,6 +336,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initExampleQHighlight();
     initSparkles();
     initVideo();
-    initCreatorBadge();
     initSmoothScroll();
 });

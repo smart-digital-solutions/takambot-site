@@ -444,97 +444,7 @@ html { scroll-behavior: smooth; }
 }
 .example-q:hover::after { opacity: 1; }
 
-/* ================================================================
-   FLOATING CREATOR BADGE
-   ================================================================ */
-.creator-badge-float {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 55;
-    animation: badgeFloat 4s ease-in-out infinite, badgeEntrance 0.8s ease 2s both;
-}
-@keyframes badgeFloat {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-6px); }
-}
-@keyframes badgeEntrance {
-    from { opacity: 0; transform: translateY(20px) scale(0.9); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
 
-.creator-badge-inner {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: rgba(10,15,30,0.85);
-    border: 1px solid rgba(0,212,255,0.2);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4),
-                0 0 0 1px rgba(0,212,255,0.06) inset,
-                0 0 20px rgba(0,212,255,0.05);
-    cursor: default;
-    transition: box-shadow 0.3s, border-color 0.3s, transform 0.2s;
-    position: relative;
-    overflow: hidden;
-}
-.creator-badge-inner::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.06), transparent);
-    transform: translateX(-100%);
-    animation: shimmerSweep 4s ease infinite 3s;
-}
-.creator-badge-inner:hover {
-    box-shadow: 0 12px 40px rgba(0,0,0,0.5),
-                0 0 0 1px rgba(0,212,255,0.15) inset,
-                0 0 40px rgba(0,212,255,0.1);
-    border-color: rgba(0,212,255,0.35);
-    transform: scale(1.03);
-}
-
-.creator-badge-avatar {
-    font-size: 18px;
-    line-height: 1;
-    filter: drop-shadow(0 0 6px rgba(0,212,255,0.4));
-}
-.creator-badge-text {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-}
-.creator-badge-name {
-    font-size: 11px;
-    font-weight: 700;
-    color: #e2e8f0;
-    white-space: nowrap;
-    display: block;
-}
-.creator-badge-role {
-    font-size: 9px;
-    color: #475569;
-    white-space: nowrap;
-    display: block;
-    font-family: 'Inter', sans-serif;
-}
-.creator-badge-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: #10b981;
-    box-shadow: 0 0 6px #10b981;
-    animation: dotPulse 2s ease-in-out infinite;
-    flex-shrink: 0;
-}
-@keyframes dotPulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 4px #10b981; }
-    50%       { opacity: 0.6; box-shadow: 0 0 12px #10b981; }
-}
-
-/* ================================================================
    SPARKLE PARTICLES
    ================================================================ */
 .sparkle {
@@ -565,14 +475,10 @@ footer::before {
 /* ================================================================
    RESPONSIVE
    ================================================================ */
-@media (max-width: 640px) {
-    .creator-badge-float { bottom: 12px; right: 12px; }
-    .creator-badge-role  { display: none; }
-}
 
 /* ================================================================
    PRINT
    ================================================================ */
 @media print {
-    .orb, canvas, .creator-badge-float, #cursor-spotlight { display: none !important; }
+    .orb, canvas, #cursor-spotlight { display: none !important; }
 }
