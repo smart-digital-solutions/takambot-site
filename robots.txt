@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://smart-digital-solutions.github.io/takambot-site/sitemap.xml
