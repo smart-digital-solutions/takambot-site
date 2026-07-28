@@ -1,4 +1,16 @@
+# World-Class Robots.txt
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /*.json$
 
+# Search Engine Crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Sitemap Location
 Sitemap: https://smart-digital-solutions.github.io/takambot-site/sitemap.xml
