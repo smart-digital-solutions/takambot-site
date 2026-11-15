@@ -622,26 +622,45 @@ async function initWeeklyChangelog() {
             refEl.textContent = item.reference ? `אסמכתה: ${item.reference}` : '';
 
             const actionsWrap = document.createElement('div');
-            actionsWrap.className = 'flex flex-wrap items-center gap-2';
+            actionsWrap.className = 'w-full sm:w-auto flex flex-wrap items-center gap-2';
 
             const askBtn = document.createElement('button');
             askBtn.type = 'button';
-            askBtn.className = 'min-h-[36px] px-3 py-1.5 rounded-lg bg-cyber-400/10 hover:bg-cyber-400/20 border border-cyber-400/25 text-[11px] font-bold text-cyber-300 transition-colors cursor-pointer';
-            askBtn.textContent = '💬 שאל את תכמבוט על השינוי';
+            askBtn.className = 'min-h-[40px] px-3 py-1.5 rounded-lg bg-cyber-400/10 hover:bg-cyber-400/20 border border-cyber-400/25 text-[11px] font-bold text-cyber-300 transition-colors cursor-pointer';
+            askBtn.textContent = '💬 שאל את תכמבוט';
             askBtn.addEventListener('click', () => {
                 const promptText = `בהתאם לעדכון בהוראה ${item.doc_id} (${item.doc_title}${item.edition ? `, מהדורה ${item.edition}` : ''}), פרט לי בבקשה מה השתנה ב${item.affected_sections || 'הוראה'} ומה המשמעות המעשית למזמין?`;
                 copyTextWithFeedback(promptText, askBtn, '✅ השאלה הועתקה! הדביקו במחברת');
             });
             actionsWrap.appendChild(askBtn);
 
+            const shareText = buildShareSummary(item);
+
+            const waLink = document.createElement('a');
+            waLink.href = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+            waLink.target = '_blank';
+            waLink.rel = 'noopener noreferrer';
+            waLink.className = 'min-h-[40px] inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400/25 text-[11px] font-bold text-emerald-300 transition-colors';
+            waLink.textContent = '📤 שתף בוואטסאפ';
+            actionsWrap.appendChild(waLink);
+
+            const copyShareBtn = document.createElement('button');
+            copyShareBtn.type = 'button';
+            copyShareBtn.className = 'min-h-[40px] px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[11px] font-semibold text-gray-200 hover:text-white transition-colors cursor-pointer';
+            copyShareBtn.textContent = '📋 העתק לצוות';
+            copyShareBtn.addEventListener('click', () => {
+                copyTextWithFeedback(shareText, copyShareBtn, '✅ התקציר הועתק לשיתוף בצוות!');
+            });
+            actionsWrap.appendChild(copyShareBtn);
+
             if (isSafeHttpsUrl(item.source_url)) {
                 const linkEl = document.createElement('a');
                 linkEl.href = item.source_url;
                 linkEl.target = '_blank';
                 linkEl.rel = 'noopener noreferrer';
-                linkEl.className = 'min-h-[36px] inline-flex items-center px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[11px] font-semibold text-gray-300 hover:text-white transition-colors';
+                linkEl.className = 'min-h-[40px] inline-flex items-center px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[11px] font-semibold text-gray-300 hover:text-white transition-colors';
                 linkEl.textContent = item.source_url.includes('drive.google.com')
-                    ? '📥 לדוח השינויים (PDF)'
+                    ? '📥 לדוח (PDF)'
                     : '🌐 לאתר התכ"ם הרשמי';
                 actionsWrap.appendChild(linkEl);
             }
@@ -749,12 +768,52 @@ function initWhatsNewPopup({ latestSync, weekCount, uniqueDocs, totalCount }) {
     }, forcePreview ? 150 : 850);
 }
 
+function buildShareSummary(item) {
+    const title = item.doc_title || `עדכון הוראה ${item.doc_id || ''}`;
+    const lines = [
+        `*עדכון תכ"ם${item.doc_id ? ` (${item.doc_id})` : ''} — ${title}*`,
+    ];
+    if (item.edition) {
+        const edLabel = item.edition.startsWith('מהדורה') || item.edition.startsWith('עדכון')
+            ? item.edition : `מהדורה ${item.edition}`;
+        lines.push(`• ${edLabel}${item.publish_date ? ` (${item.publish_date})` : ''}`);
+    } else if (item.publish_date) {
+        lines.push(`• תאריך: ${item.publish_date}`);
+    }
+    if (item.affected_sections) {
+        lines.push(`• סעיפים מושפעים: ${item.affected_sections}`);
+    }
+    if (item.change_summary) {
+        lines.push(`• מה השתנה: ${item.change_summary}`);
+    }
+    if (isSafeHttpsUrl(item.source_url)) {
+        lines.push(`📄 לדוח השינויים המלא: ${item.source_url}`);
+    }
+    lines.push('🤖 למאגר תכמבוט: https://smart-digital-solutions.github.io/takambot-site/#updates');
+    return lines.join('\n');
+}
+
+function initScrollTopButton() {
+    const btn = document.getElementById('scroll-top-btn');
+    if (!btn) return;
+    const toggle = () => {
+        btn.classList.toggle('is-visible', window.scrollY > 420);
+    };
+    window.addEventListener('scroll', toggle, { passive: true });
+    toggle();
+
+    btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
 /* ─────────────────────────────────────────────────────────
    BOOT — run everything on DOM ready
    ───────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
     loadNotebooks();
     initWeeklyChangelog();
+    initScrollTopButton();
     initParticles();
     initCursorSpotlight();
     initNavbar();
