@@ -453,6 +453,7 @@ async function initWeeklyChangelog() {
 
     let allEntries = [];
     let isLive = false;
+    let fallbackLatestPdfUrl = '';
 
     const csvUrl = `https://docs.google.com/spreadsheets/d/${CHANGELOG_SHEET_ID}/export?format=csv&gid=${CHANGELOG_SHEET_GID}&t=${Date.now()}`;
     try {
@@ -471,6 +472,7 @@ async function initWeeklyChangelog() {
             if (fb.ok) {
                 const payload = await fb.json();
                 allEntries = payload.entries || [];
+                fallbackLatestPdfUrl = payload.latest_pdf_url || '';
             }
         } catch (err2) {
             console.warn('updates.json fallback failed:', err2);
@@ -494,6 +496,19 @@ async function initWeeklyChangelog() {
     const latestSync = allEntries[0].sync_date;
     const weekEntries = allEntries.filter(e => e.sync_date === latestSync);
     const uniqueWeekDocs = new Set(weekEntries.map(e => e.doc_id || e.doc_title)).size;
+
+    // Keep main & modal PDF buttons synced dynamically to the latest week's Drive PDF
+    const latestPdfEntry = weekEntries.find(
+        e => isSafeHttpsUrl(e.source_url) && e.source_url.includes('drive.google.com/file/')
+    );
+    const activeLatestPdfUrl = latestPdfEntry?.source_url
+        || (isSafeHttpsUrl(fallbackLatestPdfUrl) ? fallbackLatestPdfUrl : '');
+    if (activeLatestPdfUrl) {
+        const latestPdfBtn = document.getElementById('latest-pdf-btn');
+        const modalPdfBtn  = document.getElementById('wn-pdf-link');
+        if (latestPdfBtn) latestPdfBtn.href = activeLatestPdfUrl;
+        if (modalPdfBtn)  modalPdfBtn.href  = activeLatestPdfUrl;
+    }
 
     // Populate KPI cards & Hero pill
     const kpiWeek  = document.getElementById('cl-kpi-week');

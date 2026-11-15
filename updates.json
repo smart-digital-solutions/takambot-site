@@ -1,10 +1,10 @@
 {
   "spreadsheet_id": "1VrTI3rQP7isI1dQ0UPk4mlsdqt6IDnaA8JPJz4wQWVc",
   "gid": 323637405,
-  "generated_at": "15.11.2026 12:53",
+  "generated_at": "15.11.2026 14:21",
   "latest_sync_date": "15.11.2026",
   "weekly_folder_url": "https://drive.google.com/drive/folders/1_F2XgvRWg9q_xyPeJ53q0DAAxhKk_tHx",
-  "latest_pdf_url": "https://drive.google.com/file/d/1FbeJoiEO6qRHChIku_a6lyFjhY1xNenU/view?usp=drivesdk",
+  "latest_pdf_url": "https://drive.google.com/file/d/14XP3tEsaUKR4n6oRdW3-AVSJQ9lN8fEk/view?usp=drivesdk",
   "entries": [
     {
       "sync_date": "15.11.2026",
@@ -52,7 +52,7 @@
       "affected_sections": "1.12 ונספח ג'",
       "change_summary": "הארכת תוקף המכרז עד 31.03.2027 ועדכון רשימת הספקים הזוכים",
       "reference": "מכרז מרכזי 09-2020 (פנייה 4000525679)",
-      "source_url": "https://takam.mof.gov.il"
+      "source_url": "https://drive.google.com/file/d/1S_wgQPFKq834qAOXAPpjnDtD4DNXxPlS/view?usp=drivesdk"
     },
     {
       "sync_date": "08.11.2026",
@@ -64,7 +64,7 @@
       "affected_sections": "כללי",
       "change_summary": "עדכון מיום 02.11.2026 בהודעה 14.1.5",
       "reference": "הוראות תכ\"ם פרק 14",
-      "source_url": "https://takam.mof.gov.il"
+      "source_url": "https://drive.google.com/file/d/1S_wgQPFKq834qAOXAPpjnDtD4DNXxPlS/view?usp=drivesdk"
     }
   ]
 }
