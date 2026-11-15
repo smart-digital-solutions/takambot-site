@@ -269,37 +269,47 @@ function initSparkles() {
 /* ─────────────────────────────────────────────────────────
    11. CLIPBOARD COPY + TOAST
    ───────────────────────────────────────────────────────── */
-function copyQuestion(btn) {
-    const text = btn.querySelector('span.text-gray-300')?.textContent?.trim();
+function copyTextWithFeedback(text, anchorEl, toastMessage) {
     if (!text) return;
 
-    const writeText = () => navigator.clipboard.writeText(text).then(showToast).catch(fallback);
-    const fallback  = () => {
+    const onSuccess = () => showToast(toastMessage);
+    const fallback = () => {
         const ta = Object.assign(document.createElement('textarea'),
             { value: text, style: 'position:fixed;opacity:0' });
         document.body.appendChild(ta);
         ta.select();
-        try { document.execCommand('copy'); showToast(); } catch (_) {}
+        try { document.execCommand('copy'); onSuccess(); } catch (_) {}
         ta.remove();
     };
 
-    if (navigator.clipboard) writeText(); else fallback();
-    spawnSparkles(
-        btn.getBoundingClientRect().left + btn.offsetWidth / 2,
-        btn.getBoundingClientRect().top  + btn.offsetHeight / 2,
-        6
-    );
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(onSuccess).catch(fallback);
+    } else {
+        fallback();
+    }
+
+    if (anchorEl) {
+        const rect = anchorEl.getBoundingClientRect();
+        spawnSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2, 6);
+    }
 }
 
-function showToast() {
+function copyQuestion(btn) {
+    const text = btn.querySelector('span.text-gray-300')?.textContent?.trim();
+    copyTextWithFeedback(text, btn, '✅ השאלה הועתקה!');
+}
+
+function showToast(message = '✅ השאלה הועתקה!') {
     const t = document.getElementById('toast');
     if (!t) return;
+    t.textContent = message;
     t.classList.replace('translate-y-16', 'translate-y-0');
     t.classList.replace('opacity-0', 'opacity-100');
-    setTimeout(() => {
+    clearTimeout(t._hideTimer);
+    t._hideTimer = setTimeout(() => {
         t.classList.replace('translate-y-0', 'translate-y-16');
         t.classList.replace('opacity-100', 'opacity-0');
-    }, 2200);
+    }, 2400);
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -340,10 +350,335 @@ function initSmoothScroll() {
 }
 
 /* ─────────────────────────────────────────────────────────
+   15. LIVE WEEKLY CHANGELOG (Google Sheet + Static Fallback)
+   ───────────────────────────────────────────────────────── */
+const CHANGELOG_SHEET_ID  = '1VrTI3rQP7isI1dQ0UPk4mlsdqt6IDnaA8JPJz4wQWVc';
+const CHANGELOG_SHEET_GID = '323637405';
+
+function parseCsvRows(csvText) {
+    const rows = [];
+    let row = [];
+    let field = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < csvText.length; i++) {
+        const ch = csvText[i];
+        const next = csvText[i + 1];
+
+        if (inQuotes) {
+            if (ch === '"' && next === '"') {
+                field += '"';
+                i++;
+            } else if (ch === '"') {
+                inQuotes = false;
+            } else {
+                field += ch;
+            }
+        } else if (ch === '"') {
+            inQuotes = true;
+        } else if (ch === ',') {
+            row.push(field.trim());
+            field = '';
+        } else if (ch === '\r' && next === '\n') {
+            row.push(field.trim());
+            rows.push(row);
+            row = [];
+            field = '';
+            i++;
+        } else if (ch === '\n' || ch === '\r') {
+            row.push(field.trim());
+            rows.push(row);
+            row = [];
+            field = '';
+        } else {
+            field += ch;
+        }
+    }
+    if (field.length > 0 || row.length > 0) {
+        row.push(field.trim());
+        rows.push(row);
+    }
+    return rows;
+}
+
+function isSafeHttpsUrl(rawUrl) {
+    try {
+        const u = new URL(rawUrl);
+        return u.protocol === 'https:';
+    } catch (_) {
+        return false;
+    }
+}
+
+function normalizeSheetCsvToEntries(csvText) {
+    const rows = parseCsvRows(csvText);
+    if (rows.length < 2) return [];
+
+    const entries = [];
+    for (let i = 1; i < rows.length; i++) {
+        const r = rows[i];
+        const syncDate = (r[0] || '').trim();
+        if (!syncDate || syncDate.startsWith('סה"כ') || syncDate.startsWith('סה״כ')) continue;
+        entries.push({
+            sync_date:         syncDate,
+            publish_date:      (r[1] || '').trim(),
+            chapter:           (r[2] || '').trim(),
+            doc_id:            (r[3] || '').trim(),
+            doc_title:         (r[4] || '').trim(),
+            edition:           (r[5] || '').trim(),
+            affected_sections: (r[6] || '').trim(),
+            change_summary:    (r[7] || '').trim(),
+            reference:         (r[8] || '').trim(),
+            source_url:        (r[9] || '').trim()
+        });
+    }
+    return entries;
+}
+
+function createBadge(text, className) {
+    const span = document.createElement('span');
+    span.className = className;
+    span.textContent = text;
+    return span;
+}
+
+async function initWeeklyChangelog() {
+    const listEl        = document.getElementById('updates-list');
+    const weekBtn       = document.getElementById('filter-week-btn');
+    const allBtn        = document.getElementById('filter-all-btn');
+    const chapSelect    = document.getElementById('chapter-filter-select');
+    const searchInput   = document.getElementById('updates-search');
+    const liveBadge     = document.getElementById('updates-live-badge');
+    if (!listEl) return;
+
+    let allEntries = [];
+    let isLive = false;
+
+    const csvUrl = `https://docs.google.com/spreadsheets/d/${CHANGELOG_SHEET_ID}/export?format=csv&gid=${CHANGELOG_SHEET_GID}&t=${Date.now()}`;
+    try {
+        const res = await fetch(csvUrl, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const csvText = await res.text();
+        allEntries = normalizeSheetCsvToEntries(csvText);
+        if (allEntries.length > 0) isLive = true;
+    } catch (err) {
+        console.warn('Live Sheet CSV fetch failed, using updates.json fallback:', err);
+    }
+
+    if (!allEntries.length) {
+        try {
+            const fb = await fetch(`updates.json?t=${Date.now()}`);
+            if (fb.ok) {
+                const payload = await fb.json();
+                allEntries = payload.entries || [];
+            }
+        } catch (err2) {
+            console.warn('updates.json fallback failed:', err2);
+        }
+    }
+
+    if (liveBadge && !isLive) {
+        liveBadge.textContent = 'עותק שמור';
+        liveBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-400/25 text-[11px] font-semibold text-amber-300';
+    }
+
+    if (!allEntries.length) {
+        listEl.innerHTML = '';
+        const empty = document.createElement('div');
+        empty.className = 'p-6 rounded-2xl bg-dark-800/40 border border-white/[0.06] text-center text-xs text-gray-400';
+        empty.textContent = 'טרם תועדו עדכונים להצגה.';
+        listEl.appendChild(empty);
+        return;
+    }
+
+    const latestSync = allEntries[0].sync_date;
+    const weekEntries = allEntries.filter(e => e.sync_date === latestSync);
+    const uniqueWeekDocs = new Set(weekEntries.map(e => e.doc_id || e.doc_title)).size;
+
+    // Populate KPI cards & Hero pill
+    const kpiWeek  = document.getElementById('cl-kpi-week');
+    const kpiDocs  = document.getElementById('cl-kpi-week-docs');
+    const kpiDate  = document.getElementById('cl-kpi-date');
+    const kpiTotal = document.getElementById('cl-kpi-total');
+    if (kpiWeek)  kpiWeek.textContent  = String(weekEntries.length);
+    if (kpiDocs)  kpiDocs.textContent  = `ב-${uniqueWeekDocs} הוראות`;
+    if (kpiDate)  kpiDate.textContent  = latestSync;
+    if (kpiTotal) kpiTotal.textContent = String(allEntries.length);
+
+    if (weekBtn) weekBtn.textContent = `✨ חדש השבוע (${weekEntries.length})`;
+    if (allBtn)  allBtn.textContent  = `📚 כל ההיסטוריה (${allEntries.length})`;
+
+    const heroPill = document.getElementById('hero-updates-pill');
+    const heroText = document.getElementById('hero-updates-text');
+    if (heroPill && heroText) {
+        heroText.textContent = `עודכן ${latestSync} · ${uniqueWeekDocs} הוראות התחדשו`;
+        heroPill.classList.remove('hidden');
+    }
+
+    // Populate chapter filter dropdown
+    if (chapSelect) {
+        const chapters = Array.from(new Set(allEntries.map(e => e.chapter).filter(Boolean)));
+        chapters.forEach(ch => {
+            const opt = document.createElement('option');
+            opt.value = ch;
+            opt.textContent = ch;
+            chapSelect.appendChild(opt);
+        });
+    }
+
+    let currentMode = 'week';
+
+    function renderList() {
+        const query = (searchInput?.value || '').trim().toLowerCase();
+        const selectedChap = chapSelect?.value || 'ALL';
+
+        const filtered = allEntries.filter(e => {
+            if (currentMode === 'week' && e.sync_date !== latestSync) return false;
+            if (selectedChap !== 'ALL' && e.chapter !== selectedChap) return false;
+            if (query) {
+                const hay = [
+                    e.doc_id, e.doc_title, e.chapter, e.affected_sections,
+                    e.change_summary, e.reference, e.edition, e.publish_date, e.sync_date
+                ].join(' ').toLowerCase();
+                if (!hay.includes(query)) return false;
+            }
+            return true;
+        });
+
+        listEl.innerHTML = '';
+        if (!filtered.length) {
+            const empty = document.createElement('div');
+            empty.className = 'p-6 rounded-2xl bg-dark-800/40 border border-white/[0.06] text-center text-xs text-gray-400';
+            empty.textContent = 'לא נמצאו עדכונים התואמים לסינון שבחרת.';
+            listEl.appendChild(empty);
+            return;
+        }
+
+        filtered.forEach(item => {
+            const isLatest = item.sync_date === latestSync;
+            const card = document.createElement('article');
+            card.className = `update-card p-4 sm:p-5 rounded-2xl ${isLatest ? 'is-latest-week' : ''}`;
+
+            // Header badges row
+            const topRow = document.createElement('div');
+            topRow.className = 'flex flex-wrap items-center justify-between gap-2 mb-2.5';
+
+            const badgesWrap = document.createElement('div');
+            badgesWrap.className = 'flex flex-wrap items-center gap-1.5';
+
+            if (isLatest) {
+                badgesWrap.appendChild(
+                    createBadge('✨ חדש השבוע', 'px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-[11px] font-bold text-emerald-300')
+                );
+            }
+            if (item.doc_id) {
+                badgesWrap.appendChild(
+                    createBadge(`הוראה ${item.doc_id}`, 'px-2.5 py-0.5 rounded-full bg-cyber-400/15 border border-cyber-400/30 text-[11px] font-extrabold text-cyber-300')
+                );
+            }
+            if (item.edition) {
+                const edLabel = item.edition.startsWith('מהדורה') || item.edition.startsWith('עדכון')
+                    ? item.edition : `מהדורה ${item.edition}`;
+                badgesWrap.appendChild(
+                    createBadge(edLabel, 'px-2.5 py-0.5 rounded-full bg-purple-500/15 border border-purple-400/25 text-[11px] font-semibold text-purple-300')
+                );
+            }
+            if (item.chapter) {
+                badgesWrap.appendChild(
+                    createBadge(item.chapter, 'px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/10 text-[11px] text-gray-300')
+                );
+            }
+
+            const datesWrap = document.createElement('div');
+            datesWrap.className = 'text-[11px] text-gray-400';
+            datesWrap.textContent = item.publish_date
+                ? `${item.publish_date} (סנכרון ${item.sync_date})`
+                : `סנכרון ${item.sync_date}`;
+
+            topRow.appendChild(badgesWrap);
+            topRow.appendChild(datesWrap);
+
+            // Title & section line
+            const titleEl = document.createElement('h3');
+            titleEl.className = 'text-sm sm:text-base font-bold text-white mb-1.5';
+            titleEl.textContent = item.doc_title || `עדכון הוראה ${item.doc_id}`;
+
+            const bodyEl = document.createElement('p');
+            bodyEl.className = 'text-xs sm:text-[13px] text-gray-300 leading-relaxed mb-3';
+            if (item.affected_sections) {
+                const secSpan = document.createElement('strong');
+                secSpan.className = 'text-cyber-300 ml-1';
+                secSpan.textContent = `[סעיף/נספח: ${item.affected_sections}]`;
+                bodyEl.appendChild(secSpan);
+            }
+            bodyEl.appendChild(document.createTextNode(item.change_summary));
+
+            // Footer metadata + interactive buttons
+            const footRow = document.createElement('div');
+            footRow.className = 'flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-white/[0.05]';
+
+            const refEl = document.createElement('span');
+            refEl.className = 'text-[11px] text-gray-500';
+            refEl.textContent = item.reference ? `אסמכתה: ${item.reference}` : '';
+
+            const actionsWrap = document.createElement('div');
+            actionsWrap.className = 'flex flex-wrap items-center gap-2';
+
+            const askBtn = document.createElement('button');
+            askBtn.type = 'button';
+            askBtn.className = 'min-h-[36px] px-3 py-1.5 rounded-lg bg-cyber-400/10 hover:bg-cyber-400/20 border border-cyber-400/25 text-[11px] font-bold text-cyber-300 transition-colors cursor-pointer';
+            askBtn.textContent = '💬 שאל את תכמבוט על השינוי';
+            askBtn.addEventListener('click', () => {
+                const promptText = `בהתאם לעדכון בהוראה ${item.doc_id} (${item.doc_title}${item.edition ? `, מהדורה ${item.edition}` : ''}), פרט לי בבקשה מה השתנה ב${item.affected_sections || 'הוראה'} ומה המשמעות המעשית למזמין?`;
+                copyTextWithFeedback(promptText, askBtn, '✅ השאלה הועתקה! הדביקו במחברת');
+            });
+            actionsWrap.appendChild(askBtn);
+
+            if (isSafeHttpsUrl(item.source_url)) {
+                const linkEl = document.createElement('a');
+                linkEl.href = item.source_url;
+                linkEl.target = '_blank';
+                linkEl.rel = 'noopener noreferrer';
+                linkEl.className = 'min-h-[36px] inline-flex items-center px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[11px] font-semibold text-gray-300 hover:text-white transition-colors';
+                linkEl.textContent = '📄 למסמך המקור';
+                actionsWrap.appendChild(linkEl);
+            }
+
+            footRow.appendChild(refEl);
+            footRow.appendChild(actionsWrap);
+
+            card.appendChild(topRow);
+            card.appendChild(titleEl);
+            card.appendChild(bodyEl);
+            card.appendChild(footRow);
+            listEl.appendChild(card);
+        });
+    }
+
+    weekBtn?.addEventListener('click', () => {
+        currentMode = 'week';
+        weekBtn.classList.add('active');
+        allBtn?.classList.remove('active');
+        renderList();
+    });
+    allBtn?.addEventListener('click', () => {
+        currentMode = 'all';
+        allBtn.classList.add('active');
+        weekBtn?.classList.remove('active');
+        renderList();
+    });
+    chapSelect?.addEventListener('change', renderList);
+    searchInput?.addEventListener('input', renderList);
+
+    renderList();
+}
+
+/* ─────────────────────────────────────────────────────────
    BOOT — run everything on DOM ready
    ───────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
     loadNotebooks();
+    initWeeklyChangelog();
     initParticles();
     initCursorSpotlight();
     initNavbar();

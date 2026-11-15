@@ -205,7 +205,7 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="style.css?v=7">
+    <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body class="bg-dark-950 text-white font-heebo overflow-x-hidden antialiased">
 
@@ -272,8 +272,12 @@
                     <!-- Creator chip in navbar -->
                     <span class="hidden md:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyber-400/5 border border-cyber-400/20 text-[10px] text-cyber-300 font-medium">דינה שרון — משרד התקשורת</span>
                 </div>
-                <div class="hidden sm:flex items-center gap-5 text-[13px] text-gray-500">
+                <div class="hidden sm:flex items-center gap-5 text-[13px] text-gray-400">
                     <a href="#notebooks" class="hover:text-cyber-400 transition-colors duration-200">מחברות</a>
+                    <a href="#updates" class="text-cyber-300 hover:text-cyber-200 font-semibold transition-colors duration-200 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse"></span>
+                        מה התחדש?
+                    </a>
                     <a href="#features" class="hover:text-cyber-400 transition-colors duration-200">יכולות</a>
                     <a href="#examples" class="hover:text-cyber-400 transition-colors duration-200">דוגמאות</a>
                     <a href="#contact" class="hover:text-cyber-400 transition-colors duration-200">קשר</a>
@@ -286,6 +290,7 @@
         <div id="mobile-menu" class="sm:hidden hidden bg-dark-900/95 backdrop-blur-xl border-b border-white/5">
             <div class="px-4 py-3 space-y-2 text-sm">
                 <a href="#notebooks" class="block text-gray-400 hover:text-cyber-400 py-1.5">מחברות</a>
+                <a href="#updates" class="block text-cyber-300 hover:text-cyber-200 font-semibold py-1.5">✨ מה התחדש השבוע?</a>
                 <a href="#features" class="block text-gray-400 hover:text-cyber-400 py-1.5">יכולות</a>
                 <a href="#examples" class="block text-gray-400 hover:text-cyber-400 py-1.5">דוגמאות</a>
                 <a href="#contact" class="block text-gray-400 hover:text-cyber-400 py-1.5">קשר</a>
@@ -334,21 +339,26 @@
                     </div>
 
                     <!-- Quick Stats Row -->
-                    <div class="flex gap-5 animate-slide-up" style="animation-delay:.45s;opacity:0">
+                    <div class="flex flex-wrap items-center gap-5 animate-slide-up" style="animation-delay:.45s;opacity:0">
                         <div>
                             <span class="text-base font-bold text-cyber-400" id="stat-docs">0</span>
-                            <span class="text-[10px] text-gray-600 block">הוראות</span>
+                            <span class="text-[10px] text-gray-500 block">הוראות</span>
                         </div>
-                        <div class="w-px bg-white/5"></div>
+                        <div class="w-px h-7 bg-white/10"></div>
                         <div>
                             <span class="text-base font-bold text-neon-purple">AI</span>
-                            <span class="text-[10px] text-gray-600 block">בינה מלאכותית</span>
+                            <span class="text-[10px] text-gray-500 block">בינה מלאכותית</span>
                         </div>
-                        <div class="w-px bg-white/5"></div>
+                        <div class="w-px h-7 bg-white/10"></div>
                         <div>
                             <span class="text-base font-bold text-neon-green">24/7</span>
-                            <span class="text-[10px] text-gray-600 block">זמין תמיד</span>
+                            <span class="text-[10px] text-gray-500 block">זמין תמיד</span>
                         </div>
+                        <a href="#updates" id="hero-updates-pill" class="hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-400/25 text-emerald-300 text-xs font-semibold hover:bg-emerald-500/20 transition-colors">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="hero-updates-text">צפו בעדכוני השבוע</span>
+                            <span>↓</span>
+                        </a>
                     </div>
                 </div>
 
@@ -374,6 +384,85 @@
                         <!-- Reflection -->
                         <div class="video-reflection"></div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== WEEKLY CHANGELOG & HISTORY ===== -->
+    <section id="updates" class="relative z-10 py-14 sm:py-16 px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl sm:text-2xl font-bold">
+                        יומן <span class="text-cyber-400">עדכונים ושינויים</span> בתכ"ם
+                    </h2>
+                    <span id="updates-live-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-400/25 text-[11px] font-semibold text-emerald-300">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        מסונכרן חי
+                    </span>
+                </div>
+                <a href="https://docs.google.com/spreadsheets/d/1VrTI3rQP7isI1dQ0UPk4mlsdqt6IDnaA8JPJz4wQWVc/edit?gid=323637405#gid=323637405"
+                   target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-dark-800/70 border border-white/10 hover:border-cyber-400/40 text-xs font-semibold text-gray-200 hover:text-cyber-300 transition-all min-h-[40px]">
+                    <span>📊</span>
+                    <span>לגיליון השינויים המלא</span>
+                    <span>↗</span>
+                </a>
+            </div>
+
+            <!-- KPI Summary Bento -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                <div class="kpi-glass p-4 rounded-xl bg-dark-800/50 border border-white/[0.06]">
+                    <span class="text-[11px] text-gray-400 block mb-1">עדכונים בשבוע האחרון</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="cl-kpi-week" class="text-2xl font-black text-cyber-400">—</span>
+                        <span id="cl-kpi-week-docs" class="text-xs text-gray-400">הוראות/הודעות</span>
+                    </div>
+                </div>
+                <div class="kpi-glass p-4 rounded-xl bg-dark-800/50 border border-white/[0.06]">
+                    <span class="text-[11px] text-gray-400 block mb-1">סנכרון שבועי אחרון</span>
+                    <span id="cl-kpi-date" class="text-xl font-extrabold text-neon-green font-inter" dir="ltr">—</span>
+                </div>
+                <div class="kpi-glass p-4 rounded-xl bg-dark-800/50 border border-white/[0.06]">
+                    <span class="text-[11px] text-gray-400 block mb-1">סה"כ שינויים מתועדים</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="cl-kpi-total" class="text-2xl font-black text-neon-purple">—</span>
+                        <span class="text-xs text-gray-400">רשומות בהיסטוריה</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter & Search Toolbar -->
+            <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 mb-6 p-3 rounded-2xl bg-dark-800/40 border border-white/[0.06]">
+                <div class="flex flex-wrap items-center gap-2" role="tablist" aria-label="סינון טווח עדכונים">
+                    <button type="button" id="filter-week-btn" data-filter="week"
+                            class="filter-pill active min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all">
+                        ✨ חדש השבוע
+                    </button>
+                    <button type="button" id="filter-all-btn" data-filter="all"
+                            class="filter-pill min-h-[40px] px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all">
+                        📚 כל ההיסטוריה
+                    </button>
+                    <select id="chapter-filter-select" aria-label="סינון לפי פרק"
+                            class="min-h-[40px] px-3 py-1.5 rounded-xl bg-dark-900/80 border border-white/10 text-xs text-gray-200 focus:outline-none focus:border-cyber-400">
+                        <option value="ALL">כל הפרקים</option>
+                    </select>
+                </div>
+
+                <div class="relative flex-1 max-w-sm">
+                    <label for="updates-search" class="sr-only">חיפוש בהיסטוריית השינויים</label>
+                    <input id="updates-search" type="search"
+                           placeholder="חיפוש לפי מס' הוראה, מכרז, סעיף או נושא..."
+                           class="w-full min-h-[40px] pr-9 pl-3 py-1.5 rounded-xl bg-dark-900/80 border border-white/10 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-cyber-400 transition-colors">
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none">🔍</span>
+                </div>
+            </div>
+
+            <!-- Updates Cards Container -->
+            <div id="updates-list" class="space-y-3" aria-live="polite">
+                <div class="p-6 rounded-2xl bg-dark-800/40 border border-white/[0.05] text-center text-xs text-gray-400 animate-pulse">
+                    טוען עדכונים חיים מהגיליון...
                 </div>
             </div>
         </div>
@@ -482,6 +571,6 @@
     <!-- Sparkle container -->
     <div id="sparkle-container" class="fixed inset-0 z-[60] pointer-events-none"></div>
 
-    <script src="script.js?v=7"></script>
+    <script src="script.js?v=8"></script>
 </body>
 </html>
