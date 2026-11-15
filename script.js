@@ -640,7 +640,9 @@ async function initWeeklyChangelog() {
                 linkEl.target = '_blank';
                 linkEl.rel = 'noopener noreferrer';
                 linkEl.className = 'min-h-[36px] inline-flex items-center px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[11px] font-semibold text-gray-300 hover:text-white transition-colors';
-                linkEl.textContent = '📄 למסמך המקור';
+                linkEl.textContent = item.source_url.includes('drive.google.com')
+                    ? '📥 לדוח השינויים (PDF)'
+                    : '🌐 לאתר התכ"ם הרשמי';
                 actionsWrap.appendChild(linkEl);
             }
 
