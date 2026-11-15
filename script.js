@@ -673,6 +673,80 @@ async function initWeeklyChangelog() {
     searchInput?.addEventListener('input', renderList);
 
     renderList();
+
+    initWhatsNewPopup({
+        latestSync,
+        weekCount: weekEntries.length,
+        uniqueDocs: uniqueWeekDocs,
+        totalCount: allEntries.length,
+    });
+}
+
+/* ─────────────────────────────────────────────────────────
+   16. WHAT'S NEW ANNOUNCEMENT MODAL (Smart Per-Week Dismissal)
+   ───────────────────────────────────────────────────────── */
+const WHATS_NEW_STORAGE_KEY = 'takambot_whats_new_dismissed_sync';
+
+function initWhatsNewPopup({ latestSync, weekCount, uniqueDocs, totalCount }) {
+    const modal = document.getElementById('whats-new-modal');
+    if (!modal || !latestSync) return;
+
+    const weekSummaryEl = document.getElementById('wn-week-summary');
+    const histSummaryEl = document.getElementById('wn-history-summary');
+    if (weekSummaryEl) {
+        weekSummaryEl.textContent = `בסנכרון ${latestSync} אותרו ${weekCount} עדכונים ב-${uniqueDocs} הוראות`;
+    }
+    if (histSummaryEl) {
+        histSummaryEl.textContent = `${totalCount} רשומות היסטוריה · סינון לפי פרק, מס' הוראה, מכרז או סעיף`;
+    }
+
+    let seenSync = '';
+    try { seenSync = localStorage.getItem(WHATS_NEW_STORAGE_KEY) || ''; } catch (_) {}
+    const forcePreview = new URLSearchParams(window.location.search).get('whatsnew') === '1';
+    if (!forcePreview && seenSync === latestSync) return;
+
+    const closeBtn  = document.getElementById('wn-close-btn');
+    const laterBtn  = document.getElementById('wn-later-btn');
+    const goBtn     = document.getElementById('wn-go-updates');
+    const pdfBtn    = document.getElementById('wn-pdf-link');
+
+    function dismissModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.removeEventListener('keydown', onEscKey);
+        try { localStorage.setItem(WHATS_NEW_STORAGE_KEY, latestSync); } catch (_) {}
+    }
+
+    function onEscKey(e) {
+        if (e.key === 'Escape') dismissModal();
+    }
+
+    closeBtn?.addEventListener('click', dismissModal);
+    laterBtn?.addEventListener('click', dismissModal);
+    pdfBtn?.addEventListener('click', dismissModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) dismissModal();
+    });
+
+    goBtn?.addEventListener('click', (e) => {
+        const rect = goBtn.getBoundingClientRect();
+        spawnSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2, 12);
+        dismissModal();
+        const updatesSection = document.getElementById('updates');
+        if (updatesSection) {
+            updatesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            updatesSection.classList.remove('updates-spotlight');
+            void updatesSection.offsetWidth;
+            updatesSection.classList.add('updates-spotlight');
+        }
+    });
+
+    setTimeout(() => {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.addEventListener('keydown', onEscKey);
+        goBtn?.focus();
+    }, forcePreview ? 150 : 850);
 }
 
 /* ─────────────────────────────────────────────────────────

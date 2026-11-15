@@ -205,7 +205,7 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="style.css?v=8">
+    <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body class="bg-dark-950 text-white font-heebo overflow-x-hidden antialiased">
 
@@ -585,8 +585,84 @@
     </div>
 
     <!-- Sparkle container -->
-    <div id="sparkle-container" class="fixed inset-0 z-[60] pointer-events-none"></div>
+    <div id="sparkle-container" class="fixed inset-0 z-[80] pointer-events-none"></div>
 
-    <script src="script.js?v=9"></script>
+    <!-- What's New Feature Announcement Modal -->
+    <div id="whats-new-modal"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="wn-title"
+         aria-describedby="wn-subtitle"
+         class="wn-backdrop fixed inset-0 z-[70] hidden items-center justify-center p-4">
+        <div class="wn-card relative w-full max-w-[520px] rounded-3xl p-6 sm:p-7 text-right shadow-2xl">
+            <button type="button"
+                    id="wn-close-btn"
+                    aria-label="סגור חלון עדכונים"
+                    class="absolute left-4 top-4 w-10 h-10 rounded-xl bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 text-gray-400 hover:text-white flex items-center justify-center text-base transition-colors cursor-pointer">
+                ✕
+            </button>
+
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/12 border border-emerald-400/30 text-emerald-300 text-[11px] font-bold mb-4">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>חדש בתכמבוט · שדרוג חכם</span>
+            </div>
+
+            <h2 id="wn-title" class="text-xl sm:text-2xl font-black text-white leading-snug mb-2">
+                מהיום לא מפספסים אף <span class="text-cyber-400">עדכון בתכ"ם!</span>
+            </h2>
+
+            <p id="wn-subtitle" class="text-xs sm:text-[13px] text-gray-300 leading-relaxed mb-5">
+                הוספנו מערכת מעקב שבועית אוטומטית: כל החידושים והשינויים בהוראות התכ"ם — כולל היסטוריה מלאה ודוח PDF מסודר להורדה.
+            </p>
+
+            <div class="space-y-2.5 mb-6">
+                <div class="wn-feature-row flex items-start gap-3 p-3 rounded-2xl">
+                    <span class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-400/25 flex items-center justify-center text-sm flex-shrink-0">✨</span>
+                    <div class="min-w-0">
+                        <div class="text-xs font-bold text-white">מעקב שבועי חכם</div>
+                        <div id="wn-week-summary" class="text-[11px] text-emerald-300 font-medium mt-0.5">מעודכן מהסנכרון השבועי האחרון</div>
+                    </div>
+                </div>
+                <div class="wn-feature-row flex items-start gap-3 p-3 rounded-2xl">
+                    <span class="w-8 h-8 rounded-xl bg-cyber-400/15 border border-cyber-400/25 flex items-center justify-center text-sm flex-shrink-0">📚</span>
+                    <div class="min-w-0">
+                        <div class="text-xs font-bold text-white">היסטוריית שינויים וחיפוש מהיר</div>
+                        <div id="wn-history-summary" class="text-[11px] text-gray-300 mt-0.5">סינון לפי פרק, מס' הוראה, מכרז או סעיף</div>
+                    </div>
+                </div>
+                <div class="wn-feature-row flex items-start gap-3 p-3 rounded-2xl">
+                    <span class="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-400/25 flex items-center justify-center text-sm flex-shrink-0">📥</span>
+                    <div class="min-w-0">
+                        <div class="text-xs font-bold text-white">דוח PDF שבועי להורדה והפצה</div>
+                        <div class="text-[11px] text-gray-300 mt-0.5">תקציר מנהלים מעוצב בקליק — לשמירה או העברה לצוות</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                <button type="button"
+                        id="wn-go-updates"
+                        class="flex-1 min-h-[44px] px-5 py-2.5 rounded-xl bg-gradient-to-l from-cyber-400 to-cyan-300 hover:brightness-110 text-dark-950 font-extrabold text-xs sm:text-[13px] shadow-lg shadow-cyber-400/25 transition-all cursor-pointer flex items-center justify-center gap-2">
+                    <span>✨ צפו במה שהתחדש השבוע</span>
+                    <span>↓</span>
+                </button>
+                <a id="wn-pdf-link"
+                   href="https://drive.google.com/file/d/1FbeJoiEO6qRHChIku_a6lyFjhY1xNenU/view?usp=drivesdk"
+                   target="_blank" rel="noopener noreferrer"
+                   class="min-h-[44px] px-4 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.11] border border-white/15 text-xs font-bold text-gray-100 transition-colors flex items-center justify-center gap-1.5">
+                    <span>📥</span>
+                    <span>דוח PDF</span>
+                </a>
+            </div>
+            <div class="mt-3 text-center">
+                <button type="button" id="wn-later-btn"
+                        class="text-[11px] text-gray-400 hover:text-gray-200 underline-offset-4 hover:underline py-1 px-2 cursor-pointer">
+                    אולי אחר כך · הצג לי שוב רק בעדכון השבועי הבא
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=10"></script>
 </body>
 </html>
